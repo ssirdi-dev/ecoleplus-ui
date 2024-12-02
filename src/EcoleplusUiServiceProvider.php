@@ -2,9 +2,9 @@
 
 namespace Ecoleplus\EcoleplusUi;
 
+use Ecoleplus\EcoleplusUi\Commands\EcoleplusUiCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Ecoleplus\EcoleplusUi\Commands\EcoleplusUiCommand;
 
 class EcoleplusUiServiceProvider extends PackageServiceProvider
 {
