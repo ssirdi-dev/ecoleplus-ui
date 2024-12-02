@@ -2,9 +2,9 @@
 
 namespace Ecoleplus\EcoleplusUi\Components;
 
-use Illuminate\View\Component;
-use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Illuminate\View\Component;
 
 abstract class BaseComponent extends Component
 {
@@ -24,10 +24,6 @@ abstract class BaseComponent extends Component
 
     /**
      * Get the default classes for a specific element from the config.
-     *
-     * @param string $component
-     * @param string $element
-     * @return string
      */
     protected function getDefaultClasses(string $component, string $element = 'base'): string
     {
@@ -37,8 +33,7 @@ abstract class BaseComponent extends Component
     /**
      * Merge the given classes with the default classes.
      *
-     * @param string|array $classes
-     * @return string
+     * @param  string|array  $classes
      */
     protected function mergeClasses($classes): string
     {
@@ -54,8 +49,7 @@ abstract class BaseComponent extends Component
     /**
      * Get a configuration value.
      *
-     * @param string $key
-     * @param mixed $default
+     * @param  mixed  $default
      * @return mixed
      */
     protected function config(string $key, $default = null)
@@ -65,10 +59,6 @@ abstract class BaseComponent extends Component
 
     /**
      * Get the color classes for a variant.
-     *
-     * @param string $variant
-     * @param string $component
-     * @return string
      */
     protected function getColorClasses(string $variant, string $component): string
     {
@@ -77,10 +67,6 @@ abstract class BaseComponent extends Component
 
     /**
      * Get the size classes.
-     *
-     * @param string $size
-     * @param array $sizes
-     * @return string
      */
     protected function getSizeClasses(string $size, array $sizes): string
     {
@@ -89,9 +75,6 @@ abstract class BaseComponent extends Component
 
     /**
      * Determine if a given class exists in the class list.
-     *
-     * @param string $class
-     * @return bool
      */
     protected function hasClass(string $class): bool
     {
@@ -101,7 +84,7 @@ abstract class BaseComponent extends Component
     /**
      * Add a class or array of classes to the component.
      *
-     * @param string|array $classes
+     * @param  string|array  $classes
      * @return $this
      */
     public function addClass($classes)
@@ -117,7 +100,7 @@ abstract class BaseComponent extends Component
     /**
      * Remove a class or array of classes from the component.
      *
-     * @param string|array $classes
+     * @param  string|array  $classes
      * @return $this
      */
     public function removeClass($classes)
@@ -131,8 +114,7 @@ abstract class BaseComponent extends Component
     /**
      * Get an attribute's value from the component.
      *
-     * @param string $key
-     * @param mixed $default
+     * @param  mixed  $default
      * @return mixed
      */
     protected function getAttribute(string $key, $default = null)
@@ -142,9 +124,6 @@ abstract class BaseComponent extends Component
 
     /**
      * Determine if the component has the given attribute.
-     *
-     * @param string $key
-     * @return bool
      */
     protected function hasAttribute(string $key): bool
     {

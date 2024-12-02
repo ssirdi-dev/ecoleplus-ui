@@ -48,13 +48,6 @@ class Button extends BaseComponent
 
     /**
      * Create a new component instance.
-     *
-     * @param string $type
-     * @param string $variant
-     * @param string $size
-     * @param bool $disabled
-     * @param string|null $icon
-     * @param string $iconPosition
      */
     public function __construct(
         string $type = 'button',
@@ -89,8 +82,6 @@ class Button extends BaseComponent
 
     /**
      * Get the size classes for the button.
-     *
-     * @return string
      */
     public function sizeClasses(): string
     {
@@ -105,8 +96,6 @@ class Button extends BaseComponent
 
     /**
      * Get all the computed classes for the button.
-     *
-     * @return string
      */
     public function classes(): string
     {

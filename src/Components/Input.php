@@ -41,12 +41,6 @@ class Input extends BaseComponent
 
     /**
      * Create a new component instance.
-     *
-     * @param string $type
-     * @param string|null $label
-     * @param string|null $error
-     * @param string|null $prefix
-     * @param string|null $suffix
      */
     public function __construct(
         string $type = 'text',
@@ -78,8 +72,6 @@ class Input extends BaseComponent
 
     /**
      * Get all the computed classes for the input.
-     *
-     * @return string
      */
     public function classes(): string
     {
@@ -95,8 +87,6 @@ class Input extends BaseComponent
 
     /**
      * Get the container classes.
-     *
-     * @return string
      */
     public function containerClasses(): string
     {
@@ -105,8 +95,6 @@ class Input extends BaseComponent
 
     /**
      * Get the label classes.
-     *
-     * @return string
      */
     public function labelClasses(): string
     {
@@ -115,8 +103,6 @@ class Input extends BaseComponent
 
     /**
      * Get the error message classes.
-     *
-     * @return string
      */
     public function errorClasses(): string
     {
@@ -125,8 +111,6 @@ class Input extends BaseComponent
 
     /**
      * Get the prefix/suffix container classes.
-     *
-     * @return string
      */
     public function addonClasses(): string
     {
@@ -135,21 +119,17 @@ class Input extends BaseComponent
 
     /**
      * Get the left addon (prefix) classes.
-     *
-     * @return string
      */
     public function leftAddonClasses(): string
     {
-        return $this->addonClasses() . ' left-0 pl-3';
+        return $this->addonClasses().' left-0 pl-3';
     }
 
     /**
      * Get the right addon (suffix) classes.
-     *
-     * @return string
      */
     public function rightAddonClasses(): string
     {
-        return $this->addonClasses() . ' right-0 pr-3';
+        return $this->addonClasses().' right-0 pr-3';
     }
 }
