@@ -5,6 +5,34 @@ namespace Ecoleplus\EcoleplusUi\Components;
 class Button extends BaseComponent
 {
     /**
+     * Available button variants.
+     */
+    const VARIANTS = [
+        'primary',
+        'secondary',
+        'success',
+        'danger',
+        'warning',
+        'info',
+        'light',
+        'dark',
+        'link',
+        'outline-primary',
+        'outline-secondary',
+        'outline-success',
+        'outline-danger',
+        'outline-warning',
+        'outline-info',
+        'outline-light',
+        'outline-dark',
+    ];
+
+    /**
+     * Available button sizes.
+     */
+    const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+    /**
      * The button type.
      *
      * @var string
@@ -64,6 +92,14 @@ class Button extends BaseComponent
         ?string $icon = null,
         string $iconPosition = 'left'
     ) {
+        if (!in_array($variant, self::VARIANTS)) {
+            $variant = 'primary';
+        }
+
+        if (!in_array($size, self::SIZES)) {
+            $size = 'md';
+        }
+
         $this->type = $type;
         $this->variant = $variant;
         $this->size = $size;
@@ -73,7 +109,7 @@ class Button extends BaseComponent
 
         $this->defaultClasses = [
             $this->getDefaultClasses('button'),
-            $this->getColorClasses($variant, 'button'),
+            $this->getColorClasses('variant.'.$variant, 'button'),
         ];
     }
 
@@ -95,11 +131,11 @@ class Button extends BaseComponent
     public function sizeClasses(): string
     {
         return $this->getSizeClasses($this->size, [
-            'xs' => 'px-2 py-1 text-xs',
-            'sm' => 'px-3 py-1.5 text-sm',
-            'md' => 'px-4 py-2 text-base',
-            'lg' => 'px-5 py-2.5 text-lg',
-            'xl' => 'px-6 py-3 text-xl',
+            'xs' => 'px-2 py-1 text-xs leading-4',
+            'sm' => 'px-3 py-1.5 text-sm leading-5',
+            'md' => 'px-4 py-2 text-base leading-6',
+            'lg' => 'px-5 py-2.5 text-lg leading-7',
+            'xl' => 'px-6 py-3 text-xl leading-8',
         ]);
     }
 
@@ -110,9 +146,23 @@ class Button extends BaseComponent
      */
     public function classes(): string
     {
-        return $this->mergeClasses([
+        $classes = [
             ...$this->defaultClasses,
             $this->sizeClasses(),
-        ]);
+        ];
+
+        if ($this->disabled) {
+            $classes[] = 'opacity-50 cursor-not-allowed';
+        }
+
+        if (str_starts_with($this->variant, 'outline-')) {
+            $classes[] = 'bg-transparent border-2';
+        }
+
+        if ($this->variant === 'link') {
+            $classes[] = 'border-0 bg-transparent underline hover:no-underline';
+        }
+
+        return $this->mergeClasses($classes);
     }
 }

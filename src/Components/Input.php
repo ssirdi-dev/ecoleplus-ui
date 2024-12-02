@@ -2,74 +2,89 @@
 
 namespace Ecoleplus\EcoleplusUi\Components;
 
+use Illuminate\View\Component;
+
 class Input extends BaseComponent
 {
     /**
      * The input type.
-     *
-     * @var string
      */
-    public $type;
+    public string $type;
 
     /**
-     * The input label.
-     *
-     * @var string|null
+     * The input value.
      */
-    public $label;
+    public mixed $value;
 
     /**
-     * The error message.
-     *
-     * @var string|null
+     * The input placeholder.
      */
-    public $error;
+    public ?string $placeholder;
 
     /**
      * The prefix content.
-     *
-     * @var string|null
      */
-    public $prefix;
+    public ?string $prefix;
 
     /**
      * The suffix content.
-     *
-     * @var string|null
      */
-    public $suffix;
+    public ?string $suffix;
+
+    /**
+     * The textarea rows.
+     */
+    public int $rows;
+
+    /**
+     * Whether to allow multiple file uploads.
+     */
+    public bool $multiple;
+
+    /**
+     * Whether to enable drag and drop for file inputs.
+     */
+    public bool $dragAndDrop;
+
+    /**
+     * Whether to enable auto-resize for textareas.
+     */
+    public bool $autoResize;
+
+    /**
+     * The maximum character count for textareas.
+     */
+    public ?int $maxChars;
 
     /**
      * Create a new component instance.
-     *
-     * @param string $type
-     * @param string|null $label
-     * @param string|null $error
-     * @param string|null $prefix
-     * @param string|null $suffix
      */
     public function __construct(
         string $type = 'text',
-        ?string $label = null,
-        ?string $error = null,
+        mixed $value = null,
+        ?string $placeholder = null,
         ?string $prefix = null,
-        ?string $suffix = null
+        ?string $suffix = null,
+        int $rows = 3,
+        bool $multiple = false,
+        bool $dragAndDrop = false,
+        bool $autoResize = false,
+        ?int $maxChars = null
     ) {
         $this->type = $type;
-        $this->label = $label;
-        $this->error = $error;
+        $this->value = $value;
+        $this->placeholder = $placeholder;
         $this->prefix = $prefix;
         $this->suffix = $suffix;
-
-        $this->defaultClasses = [
-            $this->getDefaultClasses('input'),
-        ];
+        $this->rows = $rows;
+        $this->multiple = $multiple;
+        $this->dragAndDrop = $dragAndDrop;
+        $this->autoResize = $autoResize;
+        $this->maxChars = $maxChars;
     }
 
     /**
      * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\View\View|\Closure|string
      */
     public function render()
     {
@@ -77,79 +92,68 @@ class Input extends BaseComponent
     }
 
     /**
-     * Get all the computed classes for the input.
-     *
-     * @return string
+     * Get the input wrapper classes.
+     */
+    public function wrapperClasses(): string
+    {
+        return $this->getDefaultClasses('input', 'wrapper');
+    }
+
+    /**
+     * Get the input classes.
      */
     public function classes(): string
     {
-        return $this->mergeClasses([
-            ...$this->defaultClasses,
-            // Add error state classes
-            $this->error ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : '',
-            // Add padding classes for prefix/suffix
-            $this->prefix ? 'pl-7' : '',
-            $this->suffix ? 'pr-7' : '',
-        ]);
+        $baseClasses = $this->getDefaultClasses('input', 'base');
+        
+        if ($this->type === 'file') {
+            $classes = $this->getDefaultClasses('input', 'file');
+            if ($this->dragAndDrop) {
+                $classes .= ' ' . $this->getDefaultClasses('input', 'file-drag');
+            }
+            return $classes;
+        }
+
+        if ($this->type === 'textarea') {
+            $classes = $this->getDefaultClasses('input', 'textarea');
+            if ($this->autoResize) {
+                $classes .= ' ' . $this->getDefaultClasses('input', 'textarea-auto');
+            }
+            return $classes;
+        }
+
+        return $baseClasses;
     }
 
     /**
-     * Get the container classes.
-     *
-     * @return string
+     * Get the prefix wrapper classes.
      */
-    public function containerClasses(): string
+    public function prefixClasses(): string
     {
-        return 'relative rounded-md shadow-sm';
+        return $this->getDefaultClasses('input', 'prefix');
     }
 
     /**
-     * Get the label classes.
-     *
-     * @return string
+     * Get the suffix wrapper classes.
      */
-    public function labelClasses(): string
+    public function suffixClasses(): string
     {
-        return 'block text-sm font-medium text-gray-700 mb-1';
+        return $this->getDefaultClasses('input', 'suffix');
     }
 
     /**
-     * Get the error message classes.
-     *
-     * @return string
+     * Get the drag and drop zone classes.
      */
-    public function errorClasses(): string
+    public function dragZoneClasses(): string
     {
-        return 'mt-1 text-sm text-red-600';
+        return $this->getDefaultClasses('input', 'drag-zone');
     }
 
     /**
-     * Get the prefix/suffix container classes.
-     *
-     * @return string
+     * Get the character count classes.
      */
-    public function addonClasses(): string
+    public function charCountClasses(): string
     {
-        return 'absolute inset-y-0 flex items-center pointer-events-none text-gray-500 sm:text-sm';
-    }
-
-    /**
-     * Get the left addon (prefix) classes.
-     *
-     * @return string
-     */
-    public function leftAddonClasses(): string
-    {
-        return $this->addonClasses() . ' left-0 pl-3';
-    }
-
-    /**
-     * Get the right addon (suffix) classes.
-     *
-     * @return string
-     */
-    public function rightAddonClasses(): string
-    {
-        return $this->addonClasses() . ' right-0 pr-3';
+        return $this->getDefaultClasses('input', 'char-count');
     }
 }

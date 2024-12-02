@@ -16,7 +16,7 @@ class Card extends BaseComponent
      *
      * @param bool $padded
      */
-    public function __construct(bool $padded = true)
+    public function __construct(bool $padded = false)
     {
         $this->padded = $padded;
 

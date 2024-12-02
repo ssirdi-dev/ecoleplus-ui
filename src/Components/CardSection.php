@@ -26,7 +26,7 @@ class CardSection extends BaseComponent
      */
     public function __construct(
         string $type = 'default',
-        bool $bordered = true
+        bool $bordered = false
     ) {
         $this->type = $type;
         $this->bordered = $bordered;
@@ -54,15 +54,15 @@ class CardSection extends BaseComponent
     public function classes(): string
     {
         $typeClasses = match ($this->type) {
-            'header' => 'rounded-t-lg bg-gray-50',
-            'footer' => 'rounded-b-lg bg-gray-50',
-            default => '',
+            'header' => $this->getDefaultClasses('card-section', 'type.header'),
+            'footer' => $this->getDefaultClasses('card-section', 'type.footer'),
+            default => $this->getDefaultClasses('card-section', 'type.default'),
         };
 
         $borderClasses = match ($this->type) {
-            'header' => $this->bordered ? 'border-b border-gray-200' : '',
-            'footer' => $this->bordered ? 'border-t border-gray-200' : '',
-            default => $this->bordered ? 'border-b border-gray-200' : '',
+            'header' => $this->bordered ? $this->getDefaultClasses('card-section', 'bordered-type.header') : '',
+            'footer' => $this->bordered ? $this->getDefaultClasses('card-section', 'bordered-type.footer') : '',
+            default => $this->bordered ? $this->getDefaultClasses('card-section', 'bordered-type.default') : '',
         };
 
         return $this->mergeClasses([
