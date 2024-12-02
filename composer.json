@@ -1,10 +1,15 @@
 {
     "name": "amsaid/ecoleplus-ui",
-    "description": "Laravel UI lib",
+    "description": "A highly customizable TALL stack Blade component library for Laravel",
     "keywords": [
         "Ecoleplus",
         "laravel",
-        "ecoleplus-ui"
+        "ecoleplus-ui",
+        "tall-stack",
+        "blade-components",
+        "tailwindcss",
+        "alpinejs",
+        "livewire"
     ],
     "homepage": "https://github.com/amsaid/ecoleplus-ui",
     "license": "MIT",
@@ -16,9 +21,11 @@
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": "^8.3",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^10.0||^11.0"
+        "illuminate/contracts": "^10.0||^11.0",
+        "livewire/livewire": "^3.0",
+        "blade-ui-kit/blade-icons": "^1.5"
     },
     "require-dev": {
         "laravel/pint": "^1.14",

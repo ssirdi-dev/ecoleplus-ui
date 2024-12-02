@@ -1,19 +1,6 @@
-# Laravel UI lib
+# Ecoleplus UI
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/amsaid/ecoleplus-ui.svg?style=flat-square)](https://packagist.org/packages/amsaid/ecoleplus-ui)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/amsaid/ecoleplus-ui/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/amsaid/ecoleplus-ui/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/amsaid/ecoleplus-ui/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/amsaid/ecoleplus-ui/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/amsaid/ecoleplus-ui.svg?style=flat-square)](https://packagist.org/packages/amsaid/ecoleplus-ui)
-
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/ecoleplus-ui.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/ecoleplus-ui)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+A highly customizable TALL stack (TailwindCSS, Alpine.js, Laravel, Livewire) Blade component library for Laravel 11+.
 
 ## Installation
 
@@ -23,48 +10,86 @@ You can install the package via composer:
 composer require amsaid/ecoleplus-ui
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="ecoleplus-ui-migrations"
-php artisan migrate
-```
-
 You can publish the config file with:
 
 ```bash
 php artisan vendor:publish --tag="ecoleplus-ui-config"
 ```
 
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="ecoleplus-ui-views"
-```
-
 ## Usage
 
-```php
-$ecoleplusUi = new Ecoleplus\EcoleplusUi();
-echo $ecoleplusUi->echoPhrase('Hello, Ecoleplus!');
+### Basic Components
+
+#### Button Component
+
+The button component is highly customizable and supports various variants, sizes, and icons:
+
+```blade
+<x-ecp::button>
+    Default Button
+</x-ecp::button>
+
+<x-ecp::button variant="primary" size="lg">
+    Large Primary Button
+</x-ecp::button>
+
+<x-ecp::button variant="secondary" icon="heroicon-o-plus">
+    Button with Icon
+</x-ecp::button>
 ```
+
+Available props:
+- `type`: button type (default: 'button')
+- `variant`: primary, secondary, danger (default: 'primary')
+- `size`: xs, sm, md, lg, xl (default: 'md')
+- `disabled`: boolean (default: false)
+- `icon`: icon component name
+- `iconPosition`: left, right (default: 'left')
+
+#### Input Component
+
+The input component includes support for labels, error messages, and prefix/suffix elements:
+
+```blade
+<x-ecp::input
+    label="Email"
+    type="email"
+    placeholder="Enter your email"
+/>
+
+<x-ecp::input
+    label="Price"
+    type="number"
+    prefix="$"
+    suffix=".00"
+/>
+
+<x-ecp::input
+    label="Username"
+    error="This username is already taken"
+/>
+```
+
+Available props:
+- `type`: input type (default: 'text')
+- `label`: optional label text
+- `error`: optional error message
+- `prefix`: optional prefix text/element
+- `suffix`: optional suffix text/element
+
+## Customization
+
+The configuration file (`config/ecoleplus-ui.php`) allows you to customize:
+- Component prefix
+- Default classes for each component
+- Color palette
+- And more...
 
 ## Testing
 
 ```bash
 composer test
 ```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
 ## Contributing
 

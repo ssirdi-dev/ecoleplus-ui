@@ -2,9 +2,9 @@
 
 namespace Ecoleplus\EcoleplusUi\Tests;
 
-use Ecoleplus\EcoleplusUi\EcoleplusUiServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Ecoleplus\EcoleplusUi\EcoleplusUiServiceProvider;
 
 class TestCase extends Orchestra
 {
