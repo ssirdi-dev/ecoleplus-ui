@@ -36,9 +36,9 @@
         handleFiles(fileList) {
             if (this.isProcessing) return;
             this.isProcessing = true;
-
+            const multiple = @js($multiple);
             try {
-                const newFiles = @if(!$multiple) Array.from(fileList).slice(0, 1) @else Array.from(fileList) @endif;
+                const newFiles = multiple ? Array.from(fileList).slice(0, 1) : Array.from(fileList) ;
 
                 if (this.maxBytes) {
                     this.files = newFiles.filter(file => file.size <= this.maxBytes);
