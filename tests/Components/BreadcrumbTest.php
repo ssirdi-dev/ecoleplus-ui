@@ -47,10 +47,10 @@ test('breadcrumb component supports custom separator', function () {
             separator="/"
         />
     ');
-
-    expect($view)
-        ->toContain('/')
-        ->not->toContain('heroicon-m-chevron-right');
+    /** @var \Pest\Expectation|\Pest\Support\Extendable $expect */
+    $expect = expect($view)
+        ->toContain('/');
+    $expect->not->toContain('heroicon-m-chevron-right');
 });
 
 test('breadcrumb component styles last item differently', function () {

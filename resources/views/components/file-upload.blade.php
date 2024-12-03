@@ -38,11 +38,7 @@
             this.isProcessing = true;
 
             try {
-                const newFiles = @if(!$multiple)
-                    Array.from(fileList).slice(0, 1)
-                @else
-                    Array.from(fileList)
-                @endif;
+                const newFiles = @if(!$multiple) Array.from(fileList).slice(0, 1) @else Array.from(fileList) @endif;
 
                 if (this.maxBytes) {
                     this.files = newFiles.filter(file => file.size <= this.maxBytes);
