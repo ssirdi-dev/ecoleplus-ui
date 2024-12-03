@@ -1,48 +1,52 @@
 <?php
 
-namespace Ecoleplus\EcoleplusUi\Tests;
+namespace EcolePlus\EcolePlusUi\Tests;
 
+use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
+use BladeUI\Icons\BladeIconsServiceProvider;
+use EcolePlus\EcolePlusUi\EcolePlusUiServiceProvider;
+use Illuminate\Foundation\Application;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Ecoleplus\EcoleplusUi\EcoleplusUiServiceProvider;
-use Ecoleplus\EcoleplusUi\Tests\Components\ComponentTestCase;
-use Illuminate\Support\Facades\View;
 
 class TestCase extends Orchestra
 {
-    use ComponentTestCase;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Register the package views
-        View::addNamespace('ecoleplus-ui', __DIR__.'/../resources/views');
+        // Load package views
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'ecoleplus-ui');
 
-        // Load the package config
-        $this->app->make('config')->set([
-            'ecoleplus-ui.defaults.button.base' => 'inline-flex items-center justify-center border rounded-md font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150',
-            'ecoleplus-ui.defaults.button.primary' => 'border-transparent text-white bg-primary-600 hover:bg-primary-700 focus:ring-primary-500',
-        ]);
+        // Load package config
+        $this->mergeConfigFrom(__DIR__.'/../config/ecoleplus-ui.php', 'ecoleplus-ui');
     }
 
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
-            EcoleplusUiServiceProvider::class,
+            BladeIconsServiceProvider::class,
+            BladeHeroiconsServiceProvider::class,
+            EcolePlusUiServiceProvider::class,
         ];
     }
 
-    protected function getPackageAliases($app)
-    {
-        return [];
-    }
-
-    public function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app): void
     {
         // Set up any environment configuration
-        $app['config']->set('view.paths', [
-            __DIR__.'/../resources/views',
-            resource_path('views'),
-        ]);
+        $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
     }
-}
+
+    protected function loadViewsFrom(string $path, string $namespace): void
+    {
+        /** @var Application $app */
+        $app = $this->app;
+        $app['view']->addNamespace($namespace, $path);
+    }
+
+    protected function mergeConfigFrom(string $path, string $key): void
+    {
+        /** @var Application $app */
+        $app = $this->app;
+        $app['config']->set($key, require $path);
+    }
+} 

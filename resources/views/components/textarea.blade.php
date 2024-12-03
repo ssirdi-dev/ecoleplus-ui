@@ -4,15 +4,14 @@
     'label' => null,
     'hint' => null,
     'error' => null,
-    'placeholder' => null,
-    'options' => [],
+    'rows' => 3,
 ])
 
 @php
     $hasError = $error !== null;
     $id = $id ?? $name;
     
-    $config = config('ecoleplus-ui.components.select');
+    $config = config('ecoleplus-ui.components.textarea');
     $baseClasses = $config['base'];
     $errorClasses = $config['error'];
     $labelClasses = $config['label'];
@@ -26,23 +25,14 @@
         </label>
     @endif
 
-    <select
+    <textarea
         {{ $attributes->merge([
             'id' => $id,
             'name' => $name,
+            'rows' => $rows,
             'class' => $baseClasses . ($hasError ? ' ' . $errorClasses : '')
         ]) }}
-    >
-        @if($placeholder)
-            <option value="">{{ $placeholder }}</option>
-        @endif
-
-        @foreach($options as $value => $label)
-            <option value="{{ $value }}">{{ $label }}</option>
-        @endforeach
-
-        {{ $slot }}
-    </select>
+    >{{ $slot }}</textarea>
 
     @if($hint && !$hasError)
         <p class="{{ $hintClasses }}">{{ $hint }}</p>

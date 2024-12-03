@@ -1,41 +1,32 @@
 @props([
     'type' => 'button',
     'variant' => 'primary',
-    'size' => 'md',
-    'disabled' => false,
-    'icon' => null,
-    'iconPosition' => 'left',
+    'iconLeft' => null,
+    'iconRight' => null,
 ])
 
+@php
+    $baseClasses = config('ecoleplus-ui.components.button.base');
+    $variantClasses = config('ecoleplus-ui.components.button.variants.' . $variant, '');
+@endphp
 
 <button
     type="{{ $type }}"
-    {{ $attributes->merge(['class' => $classes()]) }}
-    @disabled($disabled)
+    {{ $attributes->merge(['class' => $baseClasses . ' ' . $variantClasses]) }}
 >
-    @if($icon && $iconPosition === 'left')
-        <x-dynamic-component
-            :component="$icon"
-            @class([
-                'mr-2',
-                'w-4 h-4' => $size === 'xs' || $size === 'sm',
-                'w-5 h-5' => $size === 'md',
-                'w-6 h-6' => $size === 'lg' || $size === 'xl',
-            ])
+    @if($iconLeft)
+        <x-dynamic-component 
+            :component="$iconLeft" 
+            class="-ml-1 mr-2 h-5 w-5"
         />
     @endif
 
     {{ $slot }}
 
-    @if($icon && $iconPosition === 'right')
-        <x-dynamic-component
-            :component="$icon"
-            @class([
-                'ml-2',
-                'w-4 h-4' => $size === 'xs' || $size === 'sm',
-                'w-5 h-5' => $size === 'md',
-                'w-6 h-6' => $size === 'lg' || $size === 'xl',
-            ])
+    @if($iconRight)
+        <x-dynamic-component 
+            :component="$iconRight" 
+            class="-mr-1 ml-2 h-5 w-5"
         />
     @endif
-</button>
+</button> 

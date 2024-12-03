@@ -1,0 +1,34 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - vendor/*
+    ignoreErrors:
+        -
+            message: '#Call to an undefined method .+::with\(\)#'
+            path: tests/*
+        -
+            message: '#Undefined variable: \$this#'
+            path: tests/Pest.php
+        -
+            message: '#Function .+ has no return type specified#'
+            path: tests/Pest.php
+        -
+            message: '#Access to an undefined property Pest\\Mixins\\Expectation<mixed>::\$not#'
+            path: tests/*
+        -
+            message: '#Access to property \$not on an unknown class Pest\\Support\\Extendable#'
+            path: tests/*
+        -
+            message: '#PHPDoc tag @var for variable \$expect contains unknown class Pest\\Support\\Extendable#'
+            path: tests/*
+        -
+            message: '#PHPDoc tag @var for variable \$expect contains generic class Pest\\Expectation but does not specify its types: TValue#'
+            path: tests/*
+    tmpDir: build/phpstan
+    checkOctaneCompatibility: true
