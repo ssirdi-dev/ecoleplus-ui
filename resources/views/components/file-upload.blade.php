@@ -25,6 +25,7 @@
         dragging: false,
         files: [],
         progress: 0,
+        isProcessing: false,
         maxBytes: {{ $maxSize ? $maxSize . ' * 1024 * 1024' : 'null' }},
         handleDrop(e) {
             if (e.dataTransfer.files.length) {
@@ -33,18 +34,31 @@
             this.dragging = false;
         },
         handleFiles(fileList) {
-            @if(!$multiple)
-                this.files = Array.from(fileList).slice(0, 1);
-            @else
-                this.files = Array.from(fileList);
-            @endif
+            if (this.isProcessing) return;
+            this.isProcessing = true;
 
-            if (this.maxBytes) {
-                this.files = this.files.filter(file => file.size <= this.maxBytes);
+            try {
+                const newFiles = @if(!$multiple)
+                    Array.from(fileList).slice(0, 1)
+                @else
+                    Array.from(fileList)
+                @endif;
+
+                if (this.maxBytes) {
+                    this.files = newFiles.filter(file => file.size <= this.maxBytes);
+                } else {
+                    this.files = newFiles;
+                }
+
+                const dt = new DataTransfer();
+                this.files.forEach(file => dt.items.add(file));
+                this.$refs.input.files = dt.files;
+
+                // Use a custom event name to avoid recursion
+                this.$refs.input.dispatchEvent(new Event('file-selected'));
+            } finally {
+                this.isProcessing = false;
             }
-
-            this.$refs.input.files = this.createFileList(this.files);
-            this.$refs.input.dispatchEvent(new Event('change'));
         },
         createFileList(files) {
             const dt = new DataTransfer();
@@ -95,8 +109,10 @@
                 @if($multiple) multiple @endif
                 class="sr-only"
                 x-ref="input"
-                @change="handleFiles($event.target.files)"
-                {{ $attributes }}
+                @change="if (!isProcessing) handleFiles($event.target.files)"
+                @file-selected="$dispatch('input')"
+                {{ $attributes->whereDoesntStartWith('wire:model') }}
+                {{ $attributes->whereStartsWith('wire:model') }}
             />
 
             <div class="space-y-2">

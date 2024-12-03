@@ -93,25 +93,30 @@ module.exports = {
 - [Input](docs/components/input.md) - Text input with validation
 - [Textarea](docs/components/textarea.md) - Multi-line text input
 - [Select](docs/components/select.md) - Dropdown select component
-- [Checkbox](docs/components/form.md#checkbox) - Checkbox input with label
-- [Radio](docs/components/form.md#radio) - Radio input with label
-- [Toggle](docs/components/form.md#toggle) - Switch/toggle input with label
+- [Checkbox](docs/components/checkbox.md) - Checkbox input with label
+- [Radio](docs/components/radio.md) - Radio input with label
+- [Toggle](docs/components/toggle.md) - Switch/toggle input with label
+- [File Upload](docs/components/file-upload.md) - File upload with drag & drop
 
 ### Layout Components
 - [Card](docs/components/card.md) - Content container
 - [Card Section](docs/components/card-section.md) - Card content organizer
 
-### Interactive Components
-- [Modal](docs/components/modal.md) - Dialog windows
+### Navigation Components
+- [Breadcrumb](docs/components/breadcrumb.md) - Navigation path indicator
 - [Dropdown](docs/components/dropdown.md) - Dropdown menus
+
+### Data Display Components
+- [List Group](docs/components/list-group.md) - Versatile list component
+- [Avatar](docs/components/avatar.md) - User avatars
+- [Badge](docs/components/badge.md) - Labels and counts
 
 ### Feedback Components
 - [Alert](docs/components/alert.md) - Status messages
-- [Badge](docs/components/badge.md) - Labels and counts
 - [Progress](docs/components/progress.md) - Progress indicators
 
-### Display Components
-- [Avatar](docs/components/avatar.md) - User avatars
+### Dialog Components
+- [Modal](docs/components/modal.md) - Dialog windows
 
 ## Documentation
 
