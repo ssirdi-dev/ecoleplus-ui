@@ -8,5 +8,5 @@ uses()->group('component');
 
 function string_trim(string $string): string
 {
-    return trim(preg_replace('/\s+/', ' ', $string));
+    return trim((string)preg_replace('/\s+/', ' ', $string));
 }

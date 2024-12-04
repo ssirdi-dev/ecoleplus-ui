@@ -37,7 +37,7 @@ class Radio extends Component
      */
     public function getId(): string
     {
-        return $this->id ?? $this->name . '-' . $this->value ?? Str::random(8);
+        return $this->id ??  Str::random(8);
     }
 
     /**

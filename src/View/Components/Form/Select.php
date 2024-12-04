@@ -29,7 +29,7 @@ class Select extends Component
      * @param bool $multiple Whether multiple options can be selected
      * @param bool $searchable Whether the options are searchable
      * @param bool $clearable Whether the selection can be cleared
-     * @param array $options The options to display in the select
+     * @param array<mixed> $options The options to display in the select
      */
     public function __construct(
         public readonly ?string $name = null,
@@ -124,6 +124,8 @@ class Select extends Component
 
     /**
      * Format options into a consistent structure.
+     * 
+     * @return array<mixed>
      */
     public function getFormattedOptions(): array
     {
@@ -286,28 +288,4 @@ class Select extends Component
         return 'p-1';
     }
 
-    /**
-     * Get the state attributes.
-     */
-    public function getStateAttributes(): array
-    {
-        return [
-            'data-state' => $this->isOpen ? 'open' : 'closed',
-            'data-disabled' => $this->disabled ? 'true' : null,
-            'data-placeholder' => empty($this->value) ? 'true' : null,
-        ];
-    }
-
-    /**
-     * Get the ARIA attributes.
-     */
-    public function getAriaAttributes(): array
-    {
-        return [
-            'role' => 'combobox',
-            'aria-expanded' => $this->isOpen ? 'true' : 'false',
-            'aria-controls' => $this->getListboxId(),
-            'aria-label' => $this->label ?? $this->name,
-        ];
-    }
 } 
