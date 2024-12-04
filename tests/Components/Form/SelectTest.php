@@ -5,33 +5,29 @@ namespace EcolePlus\EcolePlusUi\Tests\Components\Form;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 
-beforeEach(function () {
-    View::addNamespace('ecoleplus-ui', __DIR__ . '/../../../resources/views');
-});
-
-test('renders basic select', function () {
+test('renders basic select structure', function () {
     $html = Blade::render(
         '<x-eplus-select name="country" />'
     );
 
     expect($html)
-        ->toContain('name="country"')
+        ->toContain('form-control w-full')
+        ->toContain('relative mt-2 form-select')
+        ->toContain('flex h-10 w-full items-center justify-between rounded-md border border-input')
         ->toContain('role="combobox"')
-        ->toContain('bg-background')
-        ->toContain('text-foreground')
-        ->toContain('border-input');
+        ->toContain('name="country"')
+        ->toContain('aria-haspopup="listbox"');
 });
 
 test('renders select with label', function () {
     $html = Blade::render(
-        '<x-eplus-select name="country" label="Country" />'
+        '<x-eplus-select name="country" label="Select Country" />'
     );
-
-    expect($html)
-        ->toContain('Country')
-        ->toContain('<label')
-        ->toContain('for="country"')
-        ->toContain('text-foreground');
+  
+    expect(string_trim($html))
+        ->toContain('text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70')
+        ->toContain('for="')
+        ->toContain('> Select Country <');
 });
 
 test('renders required select', function () {
@@ -41,7 +37,7 @@ test('renders required select', function () {
 
     expect($html)
         ->toContain('required')
-        ->toContain('text-destructive');
+        ->toContain('<span class="text-destructive" aria-hidden="true">*</span>');
 });
 
 test('renders disabled select', function () {
@@ -51,8 +47,7 @@ test('renders disabled select', function () {
 
     expect($html)
         ->toContain('disabled')
-        ->toContain('disabled:opacity-50')
-        ->toContain('disabled:cursor-not-allowed');
+        ->toContain('disabled:cursor-not-allowed disabled:opacity-50');
 });
 
 test('renders select with error', function () {
@@ -61,20 +56,20 @@ test('renders select with error', function () {
     );
 
     expect($html)
-        ->toContain('aria-invalid="true"')
+        ->toContain('border-destructive ring-destructive')
+        ->toContain('text-sm font-medium text-destructive mt-2')
         ->toContain('Please select a country')
-        ->toContain('text-destructive')
-        ->toContain('border-destructive');
+        ->toContain('aria-invalid="true"');
 });
 
 test('renders select with hint', function () {
     $html = Blade::render(
-        '<x-eplus-select name="country" hint="Choose your country of residence" />'
+        '<x-eplus-select name="country" hint="Choose your country" />'
     );
 
     expect($html)
-        ->toContain('Choose your country of residence')
-        ->toContain('text-muted-foreground');
+        ->toContain('text-sm text-muted-foreground mt-2')
+        ->toContain('Choose your country');
 });
 
 test('renders select with leading icon', function () {
@@ -83,9 +78,56 @@ test('renders select with leading icon', function () {
     );
 
     expect($html)
-        ->toContain('pl-10')
-        ->toContain('text-muted-foreground')
-        ->toContain('left-0');
+        ->toContain('absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none')
+        ->toContain('h-4 w-4 text-muted-foreground');
+});
+
+test('renders listbox with proper styling', function () {
+    $html = Blade::render(
+        '<x-eplus-select name="country" />'
+    );
+
+    expect($html)
+        ->toContain('absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-popover text-popover-foreground border border-border shadow-md outline-none');
+});
+
+test('renders options with proper styling and behavior', function () {
+    $html = Blade::render(
+        '<x-eplus-select name="country" :options="[\'us\' => \'United States\']" />'
+    );
+    expect($html)
+        ->toContain('relative flex w-full cursor-default select-none items-center rounded-sm py-1.5')
+        ->toContain('data-value="us"')
+        ->toContain('x-on:click="select($el)"')
+        ->toContain('x-on:keydown.enter.space.prevent="select($el)"')
+        ->toContain('tabindex="0"');
+});
+
+test('includes required alpine.js directives', function () {
+    $html = Blade::render(
+        '<x-eplus-select name="country" />'
+    );
+
+    expect($html)
+        ->toContain('x-data')
+        ->toContain('x-on:keydown.escape.prevent.stop="onEscape()"')
+        ->toContain('x-on:click.away="onClickAway($event)"')
+        ->toContain('x-show="open"')
+        ->toContain('x-transition:enter="transition ease-out duration-100"')
+        ->toContain('x-transition:leave="transition ease-in duration-75"');
+});
+
+test('supports livewire binding and states', function () {
+    $html = Blade::render(
+        '<x-eplus-select label="Country" name="country" wire:model="country" />',
+        ['country' => 'us']
+    );
+    expect($html)
+        ->toContain('wire:loading.delay.class="opacity-100"')
+        ->toContain('wire:loading.delay.class.remove="opacity-0"')
+        ->toContain('wire:dirty.class="opacity-100"')
+        ->toContain('wire:dirty.class.remove="opacity-0"')
+        ->toContain('wire:model="country"');
 });
 
 test('renders searchable select', function () {
@@ -94,19 +136,11 @@ test('renders searchable select', function () {
     );
 
     expect($html)
-        ->toContain('<input')
         ->toContain('type="text"')
-        ->toContain('x-model="search"');
-});
-
-test('renders multiple select', function () {
-    $html = Blade::render(
-        '<x-eplus-select name="countries" multiple />'
-    );
-
-    expect($html)
-        ->toContain('multiple: true')
-        ->toContain(':aria-multiselectable="multiple.toString()"');
+        ->toContain('x-model="search"')
+        ->toContain('x-ref="search"')
+        ->toContain('x-on:focus="open = true"')
+        ->toContain('autocomplete="off"');
 });
 
 test('renders clearable select', function () {
@@ -115,66 +149,55 @@ test('renders clearable select', function () {
     );
 
     expect($html)
-        ->toContain('clearable: true')
-        ->toContain('text-muted-foreground');
+        ->toContain('x-show="selected"')
+        ->toContain('x-on:click="clear"')
+        ->toContain('absolute inset-y-0 right-9 flex items-center pr-2');
 });
 
-test('renders listbox with proper colors', function () {
+test('renders multiple select', function () {
     $html = Blade::render(
-        '<x-eplus-select name="country" />'
+        '<x-eplus-select name="countries[]" multiple />'
+    );
+    expect($html)
+        ->toContain('name="countries[]"')
+        ->toContain(':aria-multiselectable="multiple.toString()"')
+        ->toContain('multiple: true');
+});
+
+test('renders option groups correctly', function () {
+    $html = Blade::render(
+        '<x-eplus-select name="timezone" :options="[
+            \'North America\' => [
+                [\'value\' => \'ny\', \'label\' => \'New York\'],
+                [\'value\' => \'la\', \'label\' => \'Los Angeles\']
+            ]
+        ]" />'
     );
 
     expect($html)
-        ->toContain('bg-popover')
-        ->toContain('text-popover-foreground')
-        ->toContain('ring-border');
+        ->toContain('role="group"')
+        ->toContain('aria-label="North America"')
+        ->toContain('text-sm font-semibold py-1.5 px-2 text-muted-foreground')
+        ->toContain('data-value="ny"')
+        ->toContain('data-value="la"');
 });
 
-test('renders options with proper hover states', function () {
+test('handles empty state', function () {
     $html = Blade::render(
-        '<x-eplus-select name="country" />'
+        '<x-eplus-select name="country" :options="[]" empty-message="No countries available" />'
     );
 
     expect($html)
-        ->toContain('hover:bg-accent')
-        ->toContain('hover:text-accent-foreground')
-        ->toContain('focus:bg-accent')
-        ->toContain('focus:text-accent-foreground');
+        ->toContain('p-2 text-sm text-center text-muted-foreground')
+        ->toContain('No countries available');
 });
 
-test('supports livewire binding', function () {
+test('handles loading state', function () {
     $html = Blade::render(
-        '<x-eplus-select wire:model="country" label="Country" />'
+        '<x-eplus-select name="country" loading-message="Loading countries..." />'
     );
 
     expect($html)
-        ->toContain('wire:model="country"')
-        ->toContain('wire:loading.delay.class="opacity-100"')
-        ->toContain('wire:dirty.class="opacity-100"');
-});
-
-test('renders loading indicator with proper SVG', function () {
-    $html = Blade::render(
-        '<x-eplus-select wire:model="country" label="Country" />'
-    );
-    expect($html)
-        ->toContain('<svg class="animate-spin h-4 w-4 inline-block text-foreground"')
-        ->toContain('xmlns="http://www.w3.org/2000/svg"')
-        ->toContain('viewBox="0 0 24 24"')
-        ->toContain('fill="none"')
-        ->toContain('<circle class="opacity-25"')
-        ->toContain('<path class="opacity-75"');
-});
-
-test('renders dirty indicator with proper SVG', function () {
-    $html = Blade::render(
-        '<x-eplus-select wire:model="country" label="Country" />'
-    );
-
-    expect($html)
-        ->toContain('<svg class="h-4 w-4 inline-block"')
-        ->toContain('xmlns="http://www.w3.org/2000/svg"')
-        ->toContain('viewBox="0 0 24 24"')
-        ->toContain('fill="currentColor"')
-        ->toContain('fill-rule="evenodd"');
+        ->toContain('x-show="loading"')
+        ->toContain('Loading countries...');
 }); 

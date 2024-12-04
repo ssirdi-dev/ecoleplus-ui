@@ -11,27 +11,45 @@ class Select extends Component
 {
     /**
      * Create a new component instance.
+     *
+     * @param string|null $name The name attribute of the select
+     * @param string|null $id The ID of the select. If not provided, will use the name or a random string
+     * @param string|null $label The label text
+     * @param string|null $hint Helper text to display below the select
+     * @param string|null $error Error message to display
+     * @param string|null $placeholder Placeholder text when no option is selected
+     * @param string|null $emptyMessage Message to display when there are no options
+     * @param string|null $notFoundMessage Message to display when search yields no results
+     * @param string|null $loadingMessage Message to display during loading states
+     * @param string|null $leadingIcon Name of the icon to display before the select
+     * @param string|null $iconType The icon library type (heroicon, fontawesome, etc.)
+     * @param bool $required Whether the select is required
+     * @param bool $disabled Whether the select is disabled
+     * @param bool $readonly Whether the select is readonly
+     * @param bool $multiple Whether multiple options can be selected
+     * @param bool $searchable Whether the options are searchable
+     * @param bool $clearable Whether the selection can be cleared
+     * @param array $options The options to display in the select
      */
     public function __construct(
         public readonly ?string $name = null,
         public readonly ?string $id = null,
         public readonly ?string $label = null,
+        public readonly ?string $hint = null,
+        public readonly ?string $error = null,
         public readonly ?string $placeholder = null,
+        public readonly ?string $emptyMessage = 'No options available',
+        public readonly ?string $notFoundMessage = 'No results found',
+        public readonly ?string $loadingMessage = 'Loading...',
+        public readonly ?string $leadingIcon = null,
+        public readonly ?string $iconType = 'heroicon',
         public readonly bool $required = false,
         public readonly bool $disabled = false,
         public readonly bool $readonly = false,
-        public readonly ?string $hint = null,
-        public readonly ?string $error = null,
-        public readonly ?string $leadingIcon = null,
-        public readonly ?string $trailingIcon = null,
-        public readonly ?string $iconType = 'heroicon',
-        public readonly bool $searchable = false,
         public readonly bool $multiple = false,
+        public readonly bool $searchable = false,
         public readonly bool $clearable = false,
-        public readonly ?string $emptyMessage = 'No options available',
-        public readonly ?string $loadingMessage = 'Loading...',
-        public readonly ?string $searchingMessage = 'Searching...',
-        public readonly ?string $notFoundMessage = 'No results found',
+        public readonly array $options = [],
     ) {}
 
     /**
@@ -43,7 +61,7 @@ class Select extends Component
     }
 
     /**
-     * Get the input ID.
+     * Get the select ID.
      */
     public function getId(): string
     {
@@ -105,32 +123,103 @@ class Select extends Component
     }
 
     /**
-     * Get the select/combobox classes.
+     * Format options into a consistent structure.
      */
-    public function selectClasses(ComponentAttributeBag $attributes): string
+    public function getFormattedOptions(): array
     {
-        // Base classes that should always be applied
-        $baseClasses = [
-            'flex h-10 w-full rounded-md border',
-            'bg-background text-foreground',
-            'ring-offset-background',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-        ];
+        $options = $this->options;
+        if (empty($options)) {
+            return [];
+        }
+
+        // Check if the array is associative
+        $isAssoc = array_keys($options) !== range(0, count($options) - 1);
+
+        // If it's a sequential array of strings, convert to value/label pairs
+        if (!$isAssoc && is_string(reset($options))) {
+            return array_map(function ($value) {
+                return [
+                    'value' => $value,
+                    'label' => $value,
+                ];
+            }, $options);
+        }
+
+        // If it's an associative array, convert to value/label pairs
+        if ($isAssoc && !is_array(reset($options))) {
+            return array_map(function ($value, $key) {
+                return [
+                    'value' => $key,
+                    'label' => $value,
+                ];
+            }, $options, array_keys($options));
+        }
+
+        // If it's an array of arrays with value/label keys
+        if (!$isAssoc && is_array(reset($options)) && isset(reset($options)['value'])) {
+            return $options;
+        }
+
+        // If it's an array of option groups
+        if ($isAssoc && is_array(reset($options))) {
+            $formattedGroups = [];
+            foreach ($options as $groupLabel => $groupOptions) {
+                // Skip if not an array of options
+                if (!is_array($groupOptions)) {
+                    continue;
+                }
+
+                // Format group options
+                $formattedOptions = [];
+                foreach ($groupOptions as $option) {
+                    if (is_array($option) && isset($option['value'])) {
+                        $formattedOptions[] = $option;
+                    }
+                }
+
+                if (!empty($formattedOptions)) {
+                    $formattedGroups[] = [
+                        'label' => $groupLabel,
+                        'options' => $formattedOptions,
+                    ];
+                }
+            }
+            return $formattedGroups;
+        }
+
+        return [];
+    }
+
+    /**
+     * Get the select trigger button classes.
+     */
+    public function triggerClasses(ComponentAttributeBag $attributes): string
+    {
+        $baseClasses = 'flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
         
-        // Conditional classes based on component state
-        $conditionalClasses = [
-            'border-input' => !$this->error,
-            'border-destructive ring-destructive' => $this->error,
-            'pl-10' => $this->leadingIcon,
-            'pr-10' => $this->trailingIcon || !$this->searchable,
-        ];
+        $conditionalClasses = [];
         
-        // Merge with user-provided classes
-        return $attributes->class([
-            ...$baseClasses,
-            ...$conditionalClasses,
-        ]);
+        if ($this->leadingIcon) {
+            $conditionalClasses[] = 'pl-10';
+        }
+        
+        if ($this->clearable) {
+            $conditionalClasses[] = 'pr-20';
+        } else {
+            $conditionalClasses[] = 'pr-10';
+        }
+        
+        if ($this->error) {
+            $conditionalClasses[] = 'border-destructive ring-destructive';
+        }
+
+        $mergedClasses = trim($baseClasses . ' ' . implode(' ', $conditionalClasses));
+        
+        if ($attributes->has('class')) {
+            $mergedClasses .= ' ' . $attributes->get('class');
+        }
+
+        return trim($mergedClasses);
     }
 
     /**
@@ -138,7 +227,7 @@ class Select extends Component
      */
     public function listboxClasses(): string
     {
-        return 'absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-border';
+        return 'absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-popover text-popover-foreground border border-border shadow-md outline-none';
     }
 
     /**
@@ -146,7 +235,15 @@ class Select extends Component
      */
     public function optionClasses(): string
     {
-        return 'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50';
+        return 'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:bg-accent data-[selected]:text-accent-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground';
+    }
+
+    /**
+     * Get the option group classes.
+     */
+    public function groupClasses(): string
+    {
+        return 'text-sm font-semibold py-1.5 px-2 text-muted-foreground';
     }
 
     /**
@@ -154,24 +251,63 @@ class Select extends Component
      */
     public function iconClasses(): string
     {
-        return 'h-5 w-5 text-muted-foreground';
+        return 'h-4 w-4 text-muted-foreground';
     }
 
     /**
-     * Get loading and dirty state targets.
+     * Get the option group header classes.
      */
-    public function getStateTargets(ComponentAttributeBag $attributes): string
+    public function groupHeaderClasses(): string
     {
-        $targets = [];
+        return 'py-1.5 pl-8 pr-2 text-sm font-semibold text-muted-foreground';
+    }
 
-        if ($modelTarget = $attributes->whereStartsWith('wire:model')->first()) {
-            $targets[] = $modelTarget;
-        }
+    /**
+     * Get the separator classes.
+     */
+    public function separatorClasses(): string
+    {
+        return '-mx-1 my-1 h-px bg-muted';
+    }
 
-        if ($searchTarget = $attributes->whereStartsWith('wire:search')->first()) {
-            $targets[] = $searchTarget;
-        }
+    /**
+     * Get the content classes.
+     */
+    public function contentClasses(): string
+    {
+        return 'relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95';
+    }
 
-        return implode(',', $targets);
+    /**
+     * Get the viewport classes.
+     */
+    public function viewportClasses(): string
+    {
+        return 'p-1';
+    }
+
+    /**
+     * Get the state attributes.
+     */
+    public function getStateAttributes(): array
+    {
+        return [
+            'data-state' => $this->isOpen ? 'open' : 'closed',
+            'data-disabled' => $this->disabled ? 'true' : null,
+            'data-placeholder' => empty($this->value) ? 'true' : null,
+        ];
+    }
+
+    /**
+     * Get the ARIA attributes.
+     */
+    public function getAriaAttributes(): array
+    {
+        return [
+            'role' => 'combobox',
+            'aria-expanded' => $this->isOpen ? 'true' : 'false',
+            'aria-controls' => $this->getListboxId(),
+            'aria-label' => $this->label ?? $this->name,
+        ];
     }
 } 
