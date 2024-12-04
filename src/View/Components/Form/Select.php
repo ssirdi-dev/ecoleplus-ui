@@ -109,29 +109,28 @@ class Select extends Component
      */
     public function selectClasses(ComponentAttributeBag $attributes): string
     {
-        $baseClasses = 'flex h-10 w-full rounded-md border border-input bg-background text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
+        // Base classes that should always be applied
+        $baseClasses = [
+            'flex h-10 w-full rounded-md border',
+            'bg-background text-foreground',
+            'ring-offset-background',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            'disabled:cursor-not-allowed disabled:opacity-50',
+        ];
         
-        $conditionalClasses = [];
+        // Conditional classes based on component state
+        $conditionalClasses = [
+            'border-input' => !$this->error,
+            'border-destructive ring-destructive' => $this->error,
+            'pl-10' => $this->leadingIcon,
+            'pr-10' => $this->trailingIcon || !$this->searchable,
+        ];
         
-        if ($this->leadingIcon) {
-            $conditionalClasses[] = 'pl-10';
-        }
-        
-        if ($this->trailingIcon || !$this->searchable) {
-            $conditionalClasses[] = 'pr-10';
-        }
-        
-        if ($this->error) {
-            $conditionalClasses[] = 'border-destructive ring-destructive';
-        }
-
-        $mergedClasses = trim($baseClasses . ' ' . implode(' ', $conditionalClasses));
-        
-        if ($attributes->has('class')) {
-            $mergedClasses .= ' ' . $attributes->get('class');
-        }
-
-        return trim($mergedClasses);
+        // Merge with user-provided classes
+        return $attributes->class([
+            ...$baseClasses,
+            ...$conditionalClasses,
+        ]);
     }
 
     /**
@@ -156,5 +155,23 @@ class Select extends Component
     public function iconClasses(): string
     {
         return 'h-5 w-5 text-muted-foreground';
+    }
+
+    /**
+     * Get loading and dirty state targets.
+     */
+    public function getStateTargets(ComponentAttributeBag $attributes): string
+    {
+        $targets = [];
+
+        if ($modelTarget = $attributes->whereStartsWith('wire:model')->first()) {
+            $targets[] = $modelTarget;
+        }
+
+        if ($searchTarget = $attributes->whereStartsWith('wire:search')->first()) {
+            $targets[] = $searchTarget;
+        }
+
+        return implode(',', $targets);
     }
 } 

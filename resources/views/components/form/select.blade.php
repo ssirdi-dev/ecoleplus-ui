@@ -13,9 +13,9 @@
             @endif
             @if($attributes->has('wire:model') || $attributes->has('wire:model.live'))
                 <span 
-                    wire:loading.delay.class="opacity-100" 
-                    wire:loading.delay.class.remove="opacity-0" 
-                    wire:target="{{ $attributes->whereStartsWith('wire:model')->first() }}"
+                    wire:loading.delay.class="opacity-100"
+                    wire:loading.delay.class.remove="opacity-0"
+                    wire:target="{{ $getStateTargets($attributes) }}"
                     class="ml-2 opacity-0 transition-opacity"
                 >
                     <svg class="animate-spin h-4 w-4 inline-block text-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -24,8 +24,8 @@
                     </svg>
                 </span>
                 <span 
-                    wire:dirty.class="opacity-100" 
-                    wire:dirty.class.remove="opacity-0" 
+                    wire:dirty.class="opacity-100"
+                    wire:dirty.class.remove="opacity-0"
                     wire:target="{{ $attributes->whereStartsWith('wire:model')->first() }}"
                     class="ml-2 opacity-0 transition-opacity text-warning"
                 >
@@ -39,58 +39,104 @@
 
     <div 
         x-data="{ 
-            open: false, 
-            search: '', 
+            open: false,
+            search: '',
             selected: @if($attributes->has('wire:model') || $attributes->has('wire:model.live')) @if($multiple) @entangle($attributes->wire('model')) @else @entangle($attributes->wire('model')).live @endif @else null @endif,
-            multiple: {{ $multiple ? 'true' : 'false' }},
-            searchable: {{ $searchable ? 'true' : 'false' }},
-            clearable: {{ $clearable ? 'true' : 'false' }},
             options: [],
             loading: false,
+            error: null,
+            multiple: @js($multiple),
+            clearable: @js($clearable),
+
             init() {
-                this.$watch('search', value => {
-                    if (this.searchable) {
-                        this.$wire.call('search', value)
-                    }
-                })
-            },
-            isSelected(value) {
-                if (this.multiple) {
-                    return this.selected?.includes(value)
+                // Handle search with debounce
+                if (this.$wire && @js($searchable)) {
+                    this.$watch('search', Alpine.debounce((value) => {
+                        if (value.length > 0) {
+                            this.loading = true;
+                            this.$wire.call('search', value)
+                                .then(() => {
+                                    this.loading = false;
+                                })
+                                .catch(error => {
+                                    this.error = error;
+                                    this.loading = false;
+                                    setTimeout(() => this.error = null, 3000);
+                                });
+                        }
+                    }, 300));
                 }
-                return this.selected == value
+
+                // Listen for option updates from Livewire
+                if (this.$wire) {
+                    this.$wire.on('optionsUpdated', options => {
+                        this.options = options;
+                        this.loading = false;
+                    });
+                }
             },
-            select(value) {
+
+            getSelectedLabel() {
+                if (!this.selected) {
+                    return @js($placeholder ?? 'Select an option');
+                }
+
                 if (this.multiple) {
-                    if (!this.selected) this.selected = []
-                    if (this.isSelected(value)) {
-                        this.selected = this.selected.filter(item => item !== value)
+                    const selectedOptions = this.options.filter(opt => 
+                        this.selected.includes(opt.value)
+                    );
+                    return selectedOptions.map(opt => opt.label).join(', ');
+                }
+
+                const option = this.options.find(opt => opt.value === this.selected);
+                return option?.label ?? this.selected;
+            },
+
+            select(option) {
+                if (this.multiple) {
+                    if (!Array.isArray(this.selected)) {
+                        this.selected = [];
+                    }
+                    const index = this.selected.indexOf(option.value);
+                    
+                    if (index === -1) {
+                        this.selected.push(option.value);
                     } else {
-                        this.selected.push(value)
+                        this.selected.splice(index, 1);
                     }
                 } else {
-                    this.selected = value
-                    this.open = false
+                    this.selected = option.value;
+                    this.open = false;
                 }
             },
+
             clear() {
-                this.selected = this.multiple ? [] : null
-                this.open = false
+                this.selected = this.multiple ? [] : null;
+                this.open = false;
             },
+
+            isSelected(value) {
+                if (this.multiple) {
+                    return Array.isArray(this.selected) && this.selected.includes(value);
+                }
+                return this.selected === value;
+            },
+
             onEscape() {
-                this.open = false
-                this.$refs.button?.focus()
+                this.open = false;
+                this.$refs.button?.focus();
             },
-            onClickAway($event) {
-                if (!$event.target.closest('.form-select')) {
-                    this.open = false
+
+            onClickAway(event) {
+                if (!event.target.closest('.form-select')) {
+                    this.open = false;
                 }
             }
-        }" 
-        x-on:click.away="onClickAway($event)"
+        }"
         x-on:keydown.escape.prevent.stop="onEscape()"
+        x-on:click.away="onClickAway($event)"
         class="relative mt-2 form-select"
-        {{ $attributes->only(['wire:model', 'wire:model.live']) }}
+        {{ $attributes->only(['wire:model', 'wire:model.live', 'wire:key']) }}
     >
         <div class="relative">
             @if($leadingIcon)
@@ -148,7 +194,7 @@
                         'aria-haspopup' => 'listbox',
                     ]) }}
                 >
-                    <span x-text="selected ? options.find(option => option.value == selected)?.label : '{{ $placeholder ?? 'Select an option' }}'"></span>
+                    <span x-text="getSelectedLabel()"></span>
                 </button>
             @endif
 
@@ -203,7 +249,7 @@
 
             <template x-for="option in options" :key="option.value">
                 <div
-                    x-on:click="select(option.value)"
+                    x-on:click="select(option)"
                     :class="{ 'bg-accent text-accent-foreground': isSelected(option.value) }"
                     class="{{ $optionClasses() }}"
                     role="option"
@@ -221,6 +267,13 @@
                 </div>
             </template>
         </div>
+
+        <div 
+            x-show="error"
+            x-transition.opacity
+            class="mt-2 text-sm text-destructive"
+            x-text="error"
+        ></div>
     </div>
 
     @if($error)

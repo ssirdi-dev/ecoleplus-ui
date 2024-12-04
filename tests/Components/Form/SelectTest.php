@@ -157,7 +157,6 @@ test('renders loading indicator with proper SVG', function () {
     $html = Blade::render(
         '<x-eplus-select wire:model="country" label="Country" />'
     );
-
     expect($html)
         ->toContain('<svg class="animate-spin h-4 w-4 inline-block text-foreground"')
         ->toContain('xmlns="http://www.w3.org/2000/svg"')
