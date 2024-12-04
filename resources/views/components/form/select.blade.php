@@ -224,7 +224,7 @@
             x-ref="listbox"
             role="listbox"
             :aria-multiselectable="multiple.toString()"
-            :id="$getListboxId()"
+            :id="{{ $getListboxId() }}"
             tabindex="-1"
         >
             <div x-show="loading" class="p-2 text-sm text-center text-muted-foreground">
