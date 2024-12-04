@@ -73,7 +73,7 @@
                 }
             },
             getSelectedLabel() {
-                const selectedEl = this.$refs.listbox?.querySelector(' @js('[aria-selected="true"]')');
+                const selectedEl = this.$refs.listbox?.querySelector( @js('[aria-selected="true"]'));
                 if (!selectedEl) {
                     return @js($placeholder ?? 'Select an option');
                 }
