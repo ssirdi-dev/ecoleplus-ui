@@ -109,7 +109,7 @@ class Select extends Component
      */
     public function selectClasses(ComponentAttributeBag $attributes): string
     {
-        $baseClasses = 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
+        $baseClasses = 'flex h-10 w-full rounded-md border border-input bg-background text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
         
         $conditionalClasses = [];
         
@@ -139,7 +139,7 @@ class Select extends Component
      */
     public function listboxClasses(): string
     {
-        return 'absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-popover p-1 text-popover-foreground shadow-md';
+        return 'absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-border';
     }
 
     /**
@@ -148,5 +148,13 @@ class Select extends Component
     public function optionClasses(): string
     {
         return 'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50';
+    }
+
+    /**
+     * Get the icon classes.
+     */
+    public function iconClasses(): string
+    {
+        return 'h-5 w-5 text-muted-foreground';
     }
 } 

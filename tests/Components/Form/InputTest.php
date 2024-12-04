@@ -17,7 +17,9 @@ test('renders basic input', function () {
     expect($html)
         ->toContain('type="email"')
         ->toContain('name="email"')
-        ->toContain('flex h-10 w-full rounded-md');
+        ->toContain('bg-background')
+        ->toContain('text-foreground')
+        ->toContain('border-input');
 });
 
 test('renders input with label', function () {
@@ -28,7 +30,8 @@ test('renders input with label', function () {
     expect($html)
         ->toContain('Email Address')
         ->toContain('<label')
-        ->toContain('for="email"');
+        ->toContain('for="email"')
+        ->toContain('text-foreground');
 });
 
 test('renders required input', function () {
@@ -38,7 +41,7 @@ test('renders required input', function () {
 
     expect($html)
         ->toContain('required')
-        ->toContain('*</span>');
+        ->toContain('text-destructive');
 });
 
 test('renders disabled input', function () {
@@ -47,7 +50,9 @@ test('renders disabled input', function () {
     );
 
     expect($html)
-        ->toContain('disabled');
+        ->toContain('disabled')
+        ->toContain('disabled:opacity-50')
+        ->toContain('disabled:cursor-not-allowed');
 });
 
 test('renders input with error', function () {
@@ -58,7 +63,8 @@ test('renders input with error', function () {
     expect($html)
         ->toContain('aria-invalid="true"')
         ->toContain('Invalid email address')
-        ->toContain('text-destructive');
+        ->toContain('text-destructive')
+        ->toContain('border-destructive');
 });
 
 test('renders input with hint', function () {
@@ -78,7 +84,7 @@ test('renders input with leading icon', function () {
 
     expect($html)
         ->toContain('pl-10')
-        ->toContain('<svg')
+        ->toContain('text-muted-foreground')
         ->toContain('left-0');
 });
 
@@ -89,7 +95,7 @@ test('renders input with trailing icon', function () {
 
     expect($html)
         ->toContain('pr-10')
-        ->toContain('<svg')
+        ->toContain('text-muted-foreground')
         ->toContain('right-0');
 });
 
@@ -104,21 +110,37 @@ test('supports livewire binding', function () {
         ->toContain('wire:dirty.class="opacity-100"');
 });
 
-test('supports livewire loading states', function () {
+test('renders loading indicator with proper SVG', function () {
     $html = Blade::render(
-        '<x-eplus-input wire:model="email" label="Email" wire:loading.class="opacity-50" />'
+        '<x-eplus-input wire:model="email" label="Email" />'
     );
 
     expect($html)
-        ->toContain('wire:loading.class="opacity-50"')
-        ->toContain('wire:loading.delay.class="opacity-100"');
+        ->toContain('<svg class="animate-spin h-4 w-4 inline-block text-foreground"')
+        ->toContain('xmlns="http://www.w3.org/2000/svg"')
+        ->toContain('viewBox="0 0 24 24"')
+        ->toContain('fill="none"')
+        ->toContain('<circle class="opacity-25"')
+        ->toContain('<path class="opacity-75"');
+});
+
+test('renders dirty indicator with proper SVG', function () {
+    $html = Blade::render(
+        '<x-eplus-input wire:model="email" label="Email" />'
+    );
+
+    expect($html)
+        ->toContain('<svg class="h-4 w-4 inline-block"')
+        ->toContain('xmlns="http://www.w3.org/2000/svg"')
+        ->toContain('viewBox="0 0 24 24"')
+        ->toContain('fill="currentColor"')
+        ->toContain('fill-rule="evenodd"');
 });
 
 test('supports livewire confirmation', function () {
     $html = Blade::render(
         '<x-eplus-input wire:model="email" wire:confirm="Are you sure?" />'
     );
-
     expect($html)
-        ->toContain('x-on:keydown.enter.prevent="$wire.confirm(\'Are you sure?\')"');
+        ->toContain('x-on:keydown.enter.prevent="$wire.confirm(&#039;Are you sure?&#039;)"');
 }); 

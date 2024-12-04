@@ -1,20 +1,20 @@
 <div class="flex items-start space-x-2">
     <div class="flex items-center">
         <button
-            type="button"
-            role="switch"
-            id="{{ $getId() }}"
-            @if($required) required @endif
-            @if($disabled) disabled @endif
-            @if($readonly) readonly @endif
-            @if($getDescribedBy()) aria-describedby="{{ $getDescribedBy() }}" @endif
-            @if($error) aria-invalid="true" @endif
-            class="{{ $toggleClasses($attributes) }}"
-            {{ $attributes->except(['class'])->merge([
+            {{ $attributes->merge([
+                'type' => 'button',
+                'role' => 'switch',
+                'id' => $getId(),
+                'required' => $required,
+                'disabled' => $disabled,
+                'readonly' => $readonly,
+                'aria-describedby' => $getDescribedBy(),
+                'aria-invalid' => $error ? 'true' : null,
+                'class' => $toggleClasses($attributes),
                 'x-data' => '{
                     checked: false,
                     init() {
-                        this.checked = $el.getAttribute("aria-checked") === "true";
+                        this.checked = this.$el.getAttribute("aria-checked") === "true";
                         this.$watch("checked", value => {
                             this.$el.setAttribute("aria-checked", value);
                             this.$el.setAttribute("data-state", value ? "checked" : "unchecked");
@@ -29,8 +29,7 @@
                 'x-on:click' => '!disabled && !readonly && (checked = !checked)',
                 'aria-checked' => 'false',
                 'data-state' => 'unchecked',
-            ]) }}
-        >
+            ])->except([ 'wire:model', 'wire:model.live'])}}>
             <span 
                 x-ref="thumb"
                 class="{{ $thumbClasses() }}"

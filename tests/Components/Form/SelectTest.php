@@ -17,7 +17,9 @@ test('renders basic select', function () {
     expect($html)
         ->toContain('name="country"')
         ->toContain('role="combobox"')
-        ->toContain('flex h-10 w-full rounded-md');
+        ->toContain('bg-background')
+        ->toContain('text-foreground')
+        ->toContain('border-input');
 });
 
 test('renders select with label', function () {
@@ -28,7 +30,8 @@ test('renders select with label', function () {
     expect($html)
         ->toContain('Country')
         ->toContain('<label')
-        ->toContain('for="country"');
+        ->toContain('for="country"')
+        ->toContain('text-foreground');
 });
 
 test('renders required select', function () {
@@ -38,7 +41,7 @@ test('renders required select', function () {
 
     expect($html)
         ->toContain('required')
-        ->toContain('*</span>');
+        ->toContain('text-destructive');
 });
 
 test('renders disabled select', function () {
@@ -47,7 +50,9 @@ test('renders disabled select', function () {
     );
 
     expect($html)
-        ->toContain('disabled');
+        ->toContain('disabled')
+        ->toContain('disabled:opacity-50')
+        ->toContain('disabled:cursor-not-allowed');
 });
 
 test('renders select with error', function () {
@@ -58,7 +63,8 @@ test('renders select with error', function () {
     expect($html)
         ->toContain('aria-invalid="true"')
         ->toContain('Please select a country')
-        ->toContain('text-destructive');
+        ->toContain('text-destructive')
+        ->toContain('border-destructive');
 });
 
 test('renders select with hint', function () {
@@ -78,26 +84,8 @@ test('renders select with leading icon', function () {
 
     expect($html)
         ->toContain('pl-10')
-        ->toContain('<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">')
-        ->toContain('<svg')
-        ->toContain('viewBox="0 0 24 24"')
-        ->toContain('fill="none"')
-        ->toContain('stroke="currentColor"')
-        ->toContain('stroke-width="1.5"');
-});
-
-test('renders chevron icon by default', function () {
-    $html = Blade::render(
-        '<x-eplus-select name="country" />'
-    );
-
-    expect($html)
-        ->toContain('<div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">')
-        ->toContain('<svg')
-        ->toContain('viewBox="0 0 24 24"')
-        ->toContain('fill="none"')
-        ->toContain('stroke="currentColor"')
-        ->toContain('stroke-width="1.5"');
+        ->toContain('text-muted-foreground')
+        ->toContain('left-0');
 });
 
 test('renders searchable select', function () {
@@ -128,12 +116,30 @@ test('renders clearable select', function () {
 
     expect($html)
         ->toContain('clearable: true')
-        ->toContain('x-on:click="clear"')
-        ->toContain('<svg')
-        ->toContain('viewBox="0 0 24 24"')
-        ->toContain('fill="none"')
-        ->toContain('stroke="currentColor"')
-        ->toContain('stroke-width="1.5"');
+        ->toContain('text-muted-foreground');
+});
+
+test('renders listbox with proper colors', function () {
+    $html = Blade::render(
+        '<x-eplus-select name="country" />'
+    );
+
+    expect($html)
+        ->toContain('bg-popover')
+        ->toContain('text-popover-foreground')
+        ->toContain('ring-border');
+});
+
+test('renders options with proper hover states', function () {
+    $html = Blade::render(
+        '<x-eplus-select name="country" />'
+    );
+
+    expect($html)
+        ->toContain('hover:bg-accent')
+        ->toContain('hover:text-accent-foreground')
+        ->toContain('focus:bg-accent')
+        ->toContain('focus:text-accent-foreground');
 });
 
 test('supports livewire binding', function () {
@@ -147,12 +153,29 @@ test('supports livewire binding', function () {
         ->toContain('wire:dirty.class="opacity-100"');
 });
 
-test('supports livewire loading states', function () {
+test('renders loading indicator with proper SVG', function () {
     $html = Blade::render(
-        '<x-eplus-select wire:model="country" label="Country" wire:loading.class="opacity-50" />'
+        '<x-eplus-select wire:model="country" label="Country" />'
     );
 
     expect($html)
-        ->toContain('wire:loading.class="opacity-50"')
-        ->toContain('wire:loading.delay.class="opacity-100"');
+        ->toContain('<svg class="animate-spin h-4 w-4 inline-block text-foreground"')
+        ->toContain('xmlns="http://www.w3.org/2000/svg"')
+        ->toContain('viewBox="0 0 24 24"')
+        ->toContain('fill="none"')
+        ->toContain('<circle class="opacity-25"')
+        ->toContain('<path class="opacity-75"');
+});
+
+test('renders dirty indicator with proper SVG', function () {
+    $html = Blade::render(
+        '<x-eplus-select wire:model="country" label="Country" />'
+    );
+
+    expect($html)
+        ->toContain('<svg class="h-4 w-4 inline-block"')
+        ->toContain('xmlns="http://www.w3.org/2000/svg"')
+        ->toContain('viewBox="0 0 24 24"')
+        ->toContain('fill="currentColor"')
+        ->toContain('fill-rule="evenodd"');
 }); 

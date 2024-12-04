@@ -88,7 +88,6 @@ test('renders large toggle', function () {
     $html = Blade::render(
         '<x-eplus-toggle name="notifications" size="lg" />'
     );
-
     expect($html)
         ->toContain('h-7 w-12')
         ->toContain('h-6 w-6');

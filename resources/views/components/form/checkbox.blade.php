@@ -1,29 +1,29 @@
 <div class="flex items-start space-x-2">
     <div class="flex items-center">
+      
         <input
-            type="checkbox"
-            id="{{ $getId() }}"
-            name="{{ $name }}"
-            @if($required) required @endif
-            @if($disabled) disabled @endif
-            @if($readonly) readonly @endif
-            @if($getDescribedBy()) aria-describedby="{{ $getDescribedBy() }}" @endif
-            @if($error) aria-invalid="true" @endif
-            @if($indeterminate) data-indeterminate="true" @endif
-            class="{{ $checkboxClasses($attributes) }}"
-            {{ $attributes->except(['class'])->merge([
+            {{ $attributes->merge([
+                'type' => 'checkbox',
+                'id' => $getId(),
+                'name' => $name,
+                'required' => $required,
+                'disabled' => $disabled,
+                'readonly' => $readonly,
+                'aria-describedby' => $getDescribedBy(),
+                'aria-invalid' => $error ? 'true' : null,
+                'data-indeterminate' => $indeterminate ? 'true' : null,
+                'class' => $checkboxClasses($attributes),
                 'role' => 'checkbox',
                 'aria-checked' => $indeterminate ? 'mixed' : null,
-            ]) }}
-            x-data="{
-                init() {
-                    if (this.$el.dataset.indeterminate === 'true') {
-                        this.$el.indeterminate = true;
+                'x-data' => "{
+                    init() {
+                        if (this.\$el.dataset.indeterminate === 'true') {
+                            this.\$el.indeterminate = true;lg
+                        }
                     }
-                }
-            }"
-            x-init="init()"
-        >
+                }",
+                'x-init' => "init()"
+            ])}}>
     </div>
 
     @if($label || $description || $error)
