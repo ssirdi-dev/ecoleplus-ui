@@ -16,6 +16,7 @@
                 'role' => 'checkbox',
                 'aria-checked' => $indeterminate ? 'mixed' : null,
                 'x-data' => "{
+                    checked: \$wire.entangle(".json_encode($attributes->get('wire:model'))."),
                     init() {
                         if (this.\$el.dataset.state === 'indeterminate') {
                             this.\$el.indeterminate = true;

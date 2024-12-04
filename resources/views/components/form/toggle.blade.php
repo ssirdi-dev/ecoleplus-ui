@@ -1,6 +1,25 @@
 <div class="flex items-start space-x-2">
     <div class="flex items-center">
         <button
+            x-data="{
+                checked: @entangle($attributes->get('wire:model') ),
+                disabled: @js($disabled),
+                readonly: @js($readonly) ,
+                init() {
+                    this.applyModel(this.checked);
+                    this.$watch('checked', (value) => {
+                        this.applyModel(value);
+                    });
+                },
+                applyModel(value) {
+                    this.$el.setAttribute('aria-checked', this.checked);
+                    this.$el.setAttribute('data-state', this.checked ? 'checked' : 'unchecked');
+                    this.$refs.thumb.setAttribute('data-state', this.checked ? 'checked' : 'unchecked');
+                    let checkbox = this.$el.nextElementSibling;
+                    checkbox.checked = this.checked;
+                    checkbox.dispatchEvent(new Event('change'))
+                }
+            }"
             {{ $attributes->merge([
                 'type' => 'button',
                 'role' => 'switch',
@@ -11,28 +30,12 @@
                 'aria-describedby' => $getDescribedBy(),
                 'aria-invalid' => $error ? 'true' : null,
                 'class' => $toggleClasses($attributes),
-                'x-data' => '{
-                    checked: false,
-                    disabled: ' . json_encode($disabled) . ',
-                    readonly: ' . json_encode($readonly) . ',
-                    init() {
-                        this.checked = this.$el.getAttribute("aria-checked") === "true";
-                        this.$watch("checked", value => {
-                            this.$el.setAttribute("aria-checked", value);
-                            this.$el.setAttribute("data-state", value ? "checked" : "unchecked");
-                            this.$refs.thumb.setAttribute("data-state", value ? "checked" : "unchecked");
-                            if (this.$refs.input) {
-                                this.$refs.input.checked = value;
-                                this.$refs.input.dispatchEvent(new Event("change"));
-                            }
-                        });
-                    }
-                }',
+
                 'x-on:click' => '!disabled && !readonly && (checked = !checked)',
                 'aria-checked' => 'false',
                 'data-state' => 'unchecked',
             ])->except([ 'wire:model', 'wire:model.live'])}}>
-            <span 
+            <span
                 x-ref="thumb"
                 class="{{ $thumbClasses() }}"
                 data-state="unchecked"
@@ -41,7 +44,6 @@
         <input
             type="checkbox"
             name="{{ $name }}"
-            x-ref="input"
             class="sr-only"
             {{ $attributes->only(['wire:model', 'wire:model.live']) }}
         >
@@ -50,8 +52,8 @@
     @if($label || $description || $error)
         <div class="grid gap-1.5 leading-none">
             @if($label)
-                <label 
-                    for="{{ $getId() }}" 
+                <label
+                    for="{{ $getId() }}"
                     @class([
                         $labelClasses(),
                         'text-destructive' => $error,
@@ -62,9 +64,9 @@
                         <span class="text-destructive" aria-hidden="true">*</span>
                     @endif
                     @if($attributes->has('wire:model') || $attributes->has('wire:model.live'))
-                        <span 
-                            wire:loading.delay.class="opacity-100" 
-                            wire:loading.delay.class.remove="opacity-0" 
+                        <span
+                            wire:loading.delay.class="opacity-100"
+                            wire:loading.delay.class.remove="opacity-0"
                             wire:target="{{ $attributes->whereStartsWith('wire:model')->first() }}"
                             class="ml-2 opacity-0 transition-opacity"
                         >
@@ -73,9 +75,9 @@
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                         </span>
-                        <span 
-                            wire:dirty.class="opacity-100" 
-                            wire:dirty.class.remove="opacity-0" 
+                        <span
+                            wire:dirty.class="opacity-100"
+                            wire:dirty.class.remove="opacity-0"
                             wire:target="{{ $attributes->whereStartsWith('wire:model')->first() }}"
                             class="ml-2 opacity-0 transition-opacity text-warning"
                         >
@@ -103,4 +105,4 @@
             @endif
         </div>
     @endif
-</div> 
+</div>
