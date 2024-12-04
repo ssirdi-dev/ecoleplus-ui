@@ -13,6 +13,14 @@
             class="{{ $radioClasses($attributes) }}"
             {{ $attributes->except(['class'])->merge([
                 'role' => 'radio',
+                'x-data' => '{
+                    init() {
+                        this.$watch("checked", value => {
+                            this.$el.setAttribute("data-state", value ? "checked" : "unchecked");
+                        });
+                    }
+                }',
+                'x-init' => "init()"
             ]) }}
         >
     </div>

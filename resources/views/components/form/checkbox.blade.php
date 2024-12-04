@@ -11,15 +11,18 @@
                 'readonly' => $readonly,
                 'aria-describedby' => $getDescribedBy(),
                 'aria-invalid' => $error ? 'true' : null,
-                'data-indeterminate' => $indeterminate ? 'true' : null,
+                'data-state' => $indeterminate ? 'indeterminate' : null,
                 'class' => $checkboxClasses($attributes),
                 'role' => 'checkbox',
                 'aria-checked' => $indeterminate ? 'mixed' : null,
                 'x-data' => "{
                     init() {
-                        if (this.\$el.dataset.indeterminate === 'true') {
-                            this.\$el.indeterminate = true;lg
+                        if (this.\$el.dataset.state === 'indeterminate') {
+                            this.\$el.indeterminate = true;
                         }
+                        this.\$watch('checked', value => {
+                            this.\$el.setAttribute('data-state', value ? 'checked' : 'unchecked');
+                        });
                     }
                 }",
                 'x-init' => "init()"

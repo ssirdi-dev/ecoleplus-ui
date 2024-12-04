@@ -79,12 +79,12 @@ class Radio extends Component
      */
     public function radioClasses(ComponentAttributeBag $attributes): string
     {
-        $baseClasses = 'h-4 w-4 rounded-full border border-input bg-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
+        $baseClasses = 'h-4 w-4 shrink-0 rounded-full border border-input ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 checked:bg-primary checked:text-primary-foreground';
         
         $conditionalClasses = [];
         
         if ($this->error) {
-            $conditionalClasses[] = 'border-destructive ring-destructive';
+            $conditionalClasses[] = 'border-destructive focus-visible:ring-destructive';
         }
 
         $mergedClasses = trim($baseClasses . ' ' . implode(' ', $conditionalClasses));

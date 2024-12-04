@@ -13,11 +13,14 @@ test('renders basic checkbox', function () {
     $html = Blade::render(
         '<x-eplus-checkbox name="terms" />'
     );
+
     expect($html)
         ->toContain('type="checkbox"')
         ->toContain('name="terms"')
         ->toContain('role="checkbox"')
-        ->toContain('h-4 w-4 rounded border');
+        ->toContain('h-4 w-4')
+        ->toContain('rounded')
+        ->toContain('border-input');
 });
 
 test('renders checkbox with label', function () {
@@ -77,7 +80,7 @@ test('renders indeterminate checkbox', function () {
     );
 
     expect($html)
-        ->toContain('data-indeterminate="true"')
+        ->toContain('data-state="indeterminate"')
         ->toContain('aria-checked="mixed"')
         ->toContain('x-init="init()"');
 });

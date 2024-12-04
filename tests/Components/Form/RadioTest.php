@@ -19,7 +19,9 @@ test('renders basic radio', function () {
         ->toContain('name="color"')
         ->toContain('value="red"')
         ->toContain('role="radio"')
-        ->toContain('h-4 w-4 rounded-full border');
+        ->toContain('h-4 w-4')
+        ->toContain('rounded-full')
+        ->toContain('border-input');
 });
 
 test('renders radio with label', function () {

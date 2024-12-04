@@ -13,6 +13,8 @@
                 'class' => $toggleClasses($attributes),
                 'x-data' => '{
                     checked: false,
+                    disabled: @json($disabled),
+                    readonly: @json($readonly),
                     init() {
                         this.checked = this.$el.getAttribute("aria-checked") === "true";
                         this.$watch("checked", value => {
