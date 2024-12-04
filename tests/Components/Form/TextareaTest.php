@@ -87,7 +87,7 @@ test('renders auto-resizing textarea', function () {
 
     expect($html)
         ->toContain('x-data="{')
-        ->toContain('@input="resize()"')
+        ->toContain('x-on:input="resize()"')
         ->toContain('resize-none overflow-hidden');
 });
 
@@ -129,5 +129,5 @@ test('supports livewire confirmation', function () {
     );
 
     expect($html)
-        ->toContain('x-on:keydown.enter.prevent="$wire.confirm(\'Are you sure?\')"');
+        ->toContain('x-on:keydown.enter.prevent="$wire.confirm(&#039;Are you sure?&#039;)"');
 }); 

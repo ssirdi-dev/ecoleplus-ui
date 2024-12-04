@@ -39,53 +39,49 @@
 
     <div class="relative mt-2">
         <textarea
-            id="{{ $getId() }}"
-            name="{{ $name }}"
-            rows="{{ $rows }}"
-            @if($minRows) data-min-rows="{{ $minRows }}" @endif
-            @if($maxRows) data-max-rows="{{ $maxRows }}" @endif
-            @if($placeholder) placeholder="{{ $placeholder }}" @endif
-            @if($required) required @endif
-            @if($disabled) disabled @endif
-            @if($readonly) readonly @endif
-            @if($getDescribedBy()) aria-describedby="{{ $getDescribedBy() }}" @endif
-            @if($error) aria-invalid="true" @endif
-            class="{{ $textareaClasses($attributes) }}"
-            {{ $attributes->except(['class'])->merge([
+            {{ $attributes->merge([
+                'id' => $getId(),
+                'name' => $name,
+                'rows' => $rows,
+                'data-min-rows' => $minRows,
+                'data-max-rows' => $maxRows,
+                'placeholder' => $placeholder,
+                'required' => $required,
+                'disabled' => $disabled,
+                'readonly' => $readonly,
+                'aria-describedby' => $getDescribedBy(),
+                'aria-invalid' => $error ? 'true' : null,
+                'class' => $textareaClasses($attributes),
                 'autocomplete' => 'off',
                 'autocapitalize' => 'off',
                 'autocorrect' => 'off',
                 'spellcheck' => 'false',
-            ]) }}
-            @if($attributes->has('wire:confirm'))
-                x-on:keydown.enter.prevent="$wire.confirm('{{ $attributes->get('wire:confirm') }}')"
-            @endif
-            @if($autoResize)
-                x-data="{
+                'x-on:keydown.enter.prevent' => $attributes->has('wire:confirm') ? "\$wire.confirm('{$attributes->get('wire:confirm')}')" : null,
+                'x-data' => $autoResize ? "{
                     resize() {
-                        $el.style.height = '0px';
-                        $el.style.height = $el.scrollHeight + 'px';
+                        \$el.style.height = '0px';
+                        \$el.style.height = \$el.scrollHeight + 'px';
                         
-                        const minRows = $el.dataset.minRows;
-                        const maxRows = $el.dataset.maxRows;
-                        const lineHeight = parseInt(window.getComputedStyle($el).lineHeight);
+                        const minRows = \$el.dataset.minRows;
+                        const maxRows = \$el.dataset.maxRows;
+                        const lineHeight = parseInt(window.getComputedStyle(\$el).lineHeight);
                         
-                        if (minRows && $el.scrollHeight < minRows * lineHeight) {
-                            $el.style.height = (minRows * lineHeight) + 'px';
+                        if (minRows && \$el.scrollHeight < minRows * lineHeight) {
+                            \$el.style.height = (minRows * lineHeight) + 'px';
                         }
                         
-                        if (maxRows && $el.scrollHeight > maxRows * lineHeight) {
-                            $el.style.height = (maxRows * lineHeight) + 'px';
-                            $el.style.overflowY = 'auto';
+                        if (maxRows && \$el.scrollHeight > maxRows * lineHeight) {
+                            \$el.style.height = (maxRows * lineHeight) + 'px';
+                            \$el.style.overflowY = 'auto';
                         } else {
-                            $el.style.overflowY = 'hidden';
+                            \$el.style.overflowY = 'hidden';
                         }
                     }
-                }"
-                x-init="resize()"
-                @input="resize()"
-            @endif
-        ></textarea>
+                }" : null,
+                'x-init' => $autoResize ? "resize()" : null,
+                'x-on:input' => $autoResize ? "resize()" : null,
+            ])->except(['wire:confirm'])}}>
+        </textarea>
     </div>
 
     @if($error)
