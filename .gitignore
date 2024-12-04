@@ -3,8 +3,14 @@
 .phpunit.result.cache
 .phpunit.cache
 composer.lock
-package-lock.json
+phpunit.xml
 .php-cs-fixer.cache
+.php_cs.cache
+.idea
+.vscode
+*.cache
+coverage.xml
+clover.xml
 .env
 .env.backup
 .env.production

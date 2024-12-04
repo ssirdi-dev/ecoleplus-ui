@@ -7,8 +7,9 @@ on:
     branches: [ main ]
 
 jobs:
-  tests:
+  test:
     runs-on: ubuntu-latest
+    
     strategy:
       fail-fast: true
       matrix:
@@ -26,7 +27,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, exif
+          extensions: dom, curl, libxml, mbstring, zip
           coverage: none
 
       - name: Install dependencies
@@ -35,4 +36,4 @@ jobs:
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Execute tests
-        run: composer test
+        run: vendor/bin/pest

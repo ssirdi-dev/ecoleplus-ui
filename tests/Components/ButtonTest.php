@@ -2,62 +2,135 @@
 
 namespace EcolePlus\EcolePlusUi\Tests\Components;
 
-use EcolePlus\EcolePlusUi\Tests\TestCase;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
 
-test('button component can be rendered', function () {
-    $view = Blade::render('<x-eplus::button class="custom">Click me</x-eplus::button>');
-
-    expect($view)
-        ->toContain('button')
-        ->toContain('inline-flex items-center')
-        ->toContain('custom');
+beforeEach(function () {
+    View::addNamespace('ecoleplus-ui', __DIR__ . '/../../resources/views');
 });
 
-test('button component accepts type attribute', function () {
-    $view = Blade::render('<x-eplus::button type="submit">Submit</x-eplus::button>');
+test('renders a button with label', function () {
+    $html = Blade::render(
+        '<x-eplus-button label="Click me" variant="primary" />'
+    );
 
-    expect($view)
-        ->toContain('type="submit"');
+    expect($html)
+        ->toContain('Click me')
+        ->toContain('type="button"')
+        ->toContain('inline-flex items-center');
 });
 
-test('button component accepts variant attribute', function () {
-    $view = Blade::render('<x-eplus::button variant="secondary">Click me</x-eplus::button>');
+test('renders a button with different variants', function (string $variant, array $expectedClasses) {
+    $html = Blade::render(
+        '<x-eplus-button label="Click me" :variant="$variant" />', 
+        ['variant' => $variant]
+    );
 
-    expect($view)
-        ->toContain('bg-gray-600')
-        ->toContain('hover:bg-gray-700');
+    foreach ($expectedClasses as $class) {
+        expect($html)->toContain($class);
+    }
+})->with([
+    'primary' => ['primary', ['bg-primary', 'text-primary-foreground']],
+    'secondary' => ['secondary', ['bg-secondary', 'text-secondary-foreground']],
+    'danger' => ['danger', ['bg-destructive', 'text-destructive-foreground']],
+    'success' => ['success', ['bg-green-600', 'dark:bg-green-500']],
+    'warning' => ['warning', ['bg-yellow-500', 'dark:bg-yellow-600']],
+    'info' => ['info', ['bg-sky-500', 'dark:bg-sky-400']],
+    'dark' => ['dark', ['bg-gray-900', 'dark:bg-gray-600']],
+    'outline' => ['outline', ['border', 'border-input', 'bg-background']],
+    'ghost' => ['ghost', ['hover:bg-accent']],
+    'link' => ['link', ['text-primary', 'underline-offset-4']],
+]);
+
+test('renders buttons with different sizes', function (string $size, string $expectedClass) {
+    $html = Blade::render(
+        '<x-eplus-button label="Click me" variant="primary" :size="$size" />', 
+        ['size' => $size]
+    );
+
+    expect($html)->toContain($expectedClass);
+})->with([
+    'default' => ['default', 'h-10 px-4'],
+    'sm' => ['sm', 'h-9 px-3'],
+    'lg' => ['lg', 'h-11 px-8'],
+    'icon' => ['icon', 'h-10 w-10'],
+]);
+
+test('renders a button with an icon', function () {
+    $html = Blade::render(
+        '<x-eplus-button label="Click me" variant="primary" icon="heroicon-o-plus" />'
+    );
+
+    expect($html)
+        ->toContain('<svg')
+        ->toContain('w-5 h-5');
 });
 
-test('button component can be disabled', function () {
-    $view = Blade::render('<x-eplus::button disabled>Click me</x-eplus::button>');
+test('renders a button with right positioned icon', function () {
+    $html = Blade::render(
+        '<x-eplus-button label="Click me" variant="primary" icon="heroicon-o-plus" icon-position="right" />'
+    );
 
-    expect($view)
-        ->toContain('disabled')
-        ->toContain('disabled:opacity-50')
-        ->toContain('disabled:cursor-not-allowed');
+    expect($html)
+        ->toContain('<svg')
+        ->toContain('w-5 h-5');
 });
 
-test('button component accepts left icon', function () {
-    $view = Blade::render('<x-eplus::button :iconLeft="\'heroicon-m-plus\'">Click me</x-eplus::button>');
+test('handles missing icon gracefully', function () {
+    $html = Blade::render(
+        '<x-eplus-button label="Click me" variant="primary" />'
+    );
 
-    expect($view)
-        ->toContain('svg')
-        ->toContain('-ml-1 mr-2');
+    expect($html)
+        ->not->toContain('heroicon')
+        ->not->toContain('undefined');
 });
 
-test('button component accepts right icon', function () {
-    $view = Blade::render('<x-eplus::button :iconRight="\'heroicon-m-arrow-right\'">Click me</x-eplus::button>');
+test('uses primary variant as default for invalid variants', function () {
+    $html = Blade::render(
+        '<x-eplus-button label="Click me" variant="invalid" />'
+    );
 
-    expect($view)
-        ->toContain('svg')
-        ->toContain('-mr-1 ml-2');
+    expect($html)
+        ->toContain('bg-primary')
+        ->toContain('text-primary-foreground');
 });
 
-test('button component merges attributes', function () {
-    $view = Blade::render('<x-eplus::button class="custom-class" data-test="button">Click me</x-eplus::button>');
+test('includes dark mode focus ring offset', function () {
+    $html = Blade::render(
+        '<x-eplus-button label="Click me" variant="primary" />'
+    );
 
-    expect($view)
-        ->toContain('custom-class')
-        ->toContain('data-test="button"');
+    expect($html)->toContain('focus-visible:ring-2');
+});
+
+test('handles livewire loading states', function () {
+    $html = Blade::render(
+        '<x-eplus-button wire:click="save" label="Save" variant="primary" />'
+    );
+
+    expect($html)
+        ->toContain('wire:loading.attr="disabled"')
+        ->toContain('wire:loading.delay.class="opacity-0"')
+        ->toContain('animate-spin');
+});
+
+test('shows loading spinner when processing', function () {
+    $html = Blade::render(
+        '<x-eplus-button wire:click="process" label="Process" variant="primary" icon="heroicon-o-arrow-path" />'
+    );
+
+    expect($html)
+        ->toContain('wire:loading.delay')
+        ->toContain('wire:target="process"')
+        ->toContain('animate-spin');
+});
+
+test('supports livewire confirmation', function () {
+    $html = Blade::render(
+        '<x-eplus-button wire:click="delete" wire:confirm="Are you sure?" label="Delete" variant="danger" />'
+    );
+
+    expect($html)
+        ->toContain('x-on:click.prevent="$wire.confirm(\'Are you sure?\')"');
 }); 
